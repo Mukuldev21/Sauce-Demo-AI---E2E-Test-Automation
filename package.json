@@ -1,0 +1,27 @@
+{
+  "name": "saucedemoai",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "npx playwright test",
+    "test:smoke": "npx playwright test --grep @smoke",
+    "test:regression": "npx playwright test --grep @regression",
+    "test:auth": "npx playwright test auth.spec.ts",
+    "test:cart": "npx playwright test cart.spec.ts",
+    "test:checkout": "npx playwright test checkout.spec.ts",
+    "test:products": "npx playwright test products.spec.ts",
+    "test:edge": "npx playwright test edge-cases.spec.ts",
+    "test:headed": "npx playwright test --headed --workers=1",
+    "test:ui": "npx playwright test --ui",
+    "report": "npx playwright show-report"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "devDependencies": {
+    "@playwright/test": "^1.57.0",
+    "@types/node": "^25.0.1"
+  }
+}
