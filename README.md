@@ -242,7 +242,7 @@ ISC
 
 ## 👤 Author
 
-Senior SDET Team
+Mukul Dev Mahato
 
 ---
 
