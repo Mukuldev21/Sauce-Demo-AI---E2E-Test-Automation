@@ -112,7 +112,101 @@ test('login', async ({ loginPage }) => {
 * **Strict Typing:** NO `any`. Define Interfaces for all data fixtures.
     * *Example:* `interface UserData { username: string; role: 'Admin' | 'User'; }`
 * **Fixtures:** Never hardcode test data in spec files.
-* **Environment:** Use `process.env` for URLs and Secrets.
+* **Environment Variables:** Use `.env` file for URLs and credentials (see section 6.1).
+
+### 6.1 ENVIRONMENT VARIABLES (.env FILE)
+
+**CRITICAL:** Never hardcode URLs, credentials, or sensitive data in your code.
+
+* **Setup:** Use `dotenv` package to load environment variables from `.env` file.
+* **Location:** Create `.env` file in project root (add to `.gitignore`).
+* **Access:** Use `process.env.VARIABLE_NAME` in your code.
+
+**Installation:**
+```bash
+npm install dotenv --save-dev
+```
+
+**Example `.env` file:**
+```env
+# Application URLs
+BASE_URL=https://www.saucedemo.com
+API_BASE_URL=https://api.saucedemo.com
+
+# Test Credentials
+STANDARD_USER=standard_user
+LOCKED_USER=locked_out_user
+PROBLEM_USER=problem_user
+PERFORMANCE_USER=performance_glitch_user
+TEST_PASSWORD=secret_sauce
+
+# Environment
+TEST_ENV=staging
+```
+
+**Example `.env.example` file (commit this):**
+```env
+# Application URLs
+BASE_URL=
+API_BASE_URL=
+
+# Test Credentials
+STANDARD_USER=
+LOCKED_USER=
+TEST_PASSWORD=
+
+# Environment
+TEST_ENV=
+```
+
+**Usage in `playwright.config.ts`:**
+```typescript
+import { defineConfig } from '@playwright/test';
+import dotenv from 'dotenv';
+
+// Load environment variables
+dotenv.config();
+
+export default defineConfig({
+  use: {
+    baseURL: process.env.BASE_URL,
+  },
+});
+```
+
+**Usage in Page Objects:**
+```typescript
+class LoginPage {
+  async loginAsStandardUser() {
+    await this.login(
+      process.env.STANDARD_USER!,
+      process.env.TEST_PASSWORD!
+    );
+  }
+}
+```
+
+**Usage in Tests:**
+```typescript
+test('login with env credentials', async ({ loginPage }) => {
+  await loginPage.login(
+    process.env.STANDARD_USER!,
+    process.env.TEST_PASSWORD!
+  );
+});
+```
+
+**Security Best Practices:**
+1. ✅ Add `.env` to `.gitignore` (NEVER commit it)
+2. ✅ Commit `.env.example` with empty values as template
+3. ✅ Use `process.env.VAR!` or provide defaults: `process.env.VAR || 'default'`
+4. ✅ Document required env vars in README.md
+5. ✅ Use different `.env` files for different environments (`.env.staging`, `.env.prod`)
+
+**CI/CD Integration:**
+- Set environment variables in GitHub Actions secrets
+- Use repository secrets for sensitive data
+- Never log credentials in test output
 
 ---
 

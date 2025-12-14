@@ -1,4 +1,8 @@
 import { defineConfig, devices } from '@playwright/test';
+import dotenv from 'dotenv';
+
+// Load environment variables from .env file
+dotenv.config();
 
 export default defineConfig({
   testDir: './src/tests',  // Updated to use new enterprise structure
@@ -14,7 +18,7 @@ export default defineConfig({
   ],
 
   use: {
-    baseURL: 'https://www.saucedemo.com/',
+    baseURL: process.env.BASE_URL || 'https://www.saucedemo.com/',
     trace: 'on-first-retry',
     screenshot: 'only-on-failure',
     video: 'retain-on-failure',
