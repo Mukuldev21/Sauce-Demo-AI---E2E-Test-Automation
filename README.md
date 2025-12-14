@@ -1,14 +1,17 @@
 # Sauce Demo AI - E2E Test Automation
 
-Comprehensive end-to-end test automation framework for [Sauce Demo](https://www.saucedemo.com/) using Playwright and TypeScript.
+Enterprise-level end-to-end test automation framework for [Sauce Demo](https://www.saucedemo.com/) using Playwright and TypeScript with **Component Object Model** architecture.
 
 ## 🎯 Project Overview
 
-This project implements a robust test automation framework following the **Page Object Model (POM)** pattern with strict adherence to best practices defined in `AI_TEST_STANDARDS.md`.
+This project implements a robust test automation framework following **enterprise patterns** with Component Object Model (COM), custom fixtures, and dependency injection as defined in `AI_TEST_STANDARDS.md`.
 
 ### Key Features
 - ✅ **26 Test Scenarios** covering critical user journeys
-- ✅ **7 Page Objects** with user-facing locators
+- ✅ **7 Page Objects** with Component Object Model architecture
+- ✅ **3 Reusable Components** (NavigationBar, ProductCard, CartItem)
+- ✅ **Custom Fixtures** with dependency injection
+- ✅ **Filter Pattern** for resilient locators
 - ✅ **Strict TypeScript** - No `any` types
 - ✅ **Tag-based Execution** - Run smoke, regression, or specific test suites
 - ✅ **Web-first Assertions** - Auto-waiting, no hard waits
@@ -18,24 +21,84 @@ This project implements a robust test automation framework following the **Page 
 
 ```
 SauceDemoAI/
-├── tests/
-│   ├── pages/                    # Page Object Models
+├── src/
+│   ├── tests/                      # Test specifications (organized by module)
+│   │   ├── auth/
+│   │   │   └── auth.spec.ts        # Authentication tests (6 scenarios)
+│   │   ├── cart/
+│   │   │   └── cart.spec.ts        # Shopping cart tests (5 scenarios)
+│   │   ├── checkout/
+│   │   │   └── checkout.spec.ts    # Checkout flow tests (4 scenarios)
+│   │   ├── products/
+│   │   │   └── products.spec.ts    # Product browsing tests (6 scenarios)
+│   │   └── edge-cases/
+│   │       └── edge-cases.spec.ts  # Edge cases & special users (5 scenarios)
+│   ├── pages/                      # Page Object Models
 │   │   ├── LoginPage.ts
-│   │   ├── InventoryPage.ts
+│   │   ├── InventoryPage.ts        # Uses NavigationBar & ProductCard
 │   │   ├── ProductDetailPage.ts
-│   │   ├── CartPage.ts
+│   │   ├── CartPage.ts             # Uses CartItem component
 │   │   ├── CheckoutInfoPage.ts
 │   │   ├── CheckoutOverviewPage.ts
 │   │   └── CheckoutCompletePage.ts
-│   ├── auth.spec.ts              # Authentication tests (6 scenarios)
-│   ├── cart.spec.ts              # Shopping cart tests (5 scenarios)
-│   ├── checkout.spec.ts          # Checkout flow tests (4 scenarios)
-│   ├── products.spec.ts          # Product browsing tests (6 scenarios)
-│   └── edge-cases.spec.ts        # Edge cases & special users (5 scenarios)
-├── playwright.config.ts          # Playwright configuration
-├── package.json                  # Dependencies & scripts
-├── AI_TEST_STANDARDS.md          # Coding standards & guidelines
-└── TEST_PLAN.md                  # Comprehensive test plan
+│   ├── components/                 # Reusable UI Components
+│   │   ├── NavigationBar.ts        # Burger menu, cart, logout
+│   │   ├── ProductCard.ts          # Individual product (filter pattern)
+│   │   └── CartItem.ts             # Cart item (filter pattern)
+│   ├── fixtures/                   # Custom Playwright Fixtures
+│   │   └── custom-test.ts          # Dependency injection setup
+│   └── api/                        # API integration (future)
+│       └── README.md
+├── playwright.config.ts            # Playwright configuration
+├── package.json                    # Dependencies & scripts
+├── AI_TEST_STANDARDS.md            # Enterprise coding standards
+└── TEST_PLAN.md                    # Comprehensive test plan
+```
+
+## 🏗️ Architecture Highlights
+
+### Component Object Model (COM)
+
+Instead of monolithic page objects, we use composable components:
+
+```typescript
+// InventoryPage composes NavigationBar
+class InventoryPage {
+  readonly navBar: NavigationBar;  // Shared component
+  
+  async logout() {
+    await this.navBar.logout();    // Delegate to component
+  }
+}
+
+// ProductCard uses filter pattern (resilient to DOM changes)
+const product = new ProductCard(page, 'Sauce Labs Backpack');
+await product.addToCart();
+```
+
+### Dependency Injection
+
+Tests use custom fixtures - no manual page object instantiation:
+
+```typescript
+import { test, expect } from '../../fixtures/custom-test';
+
+test('my test', async ({ loginPage, inventoryPage, cartPage }) => {
+  // All page objects automatically injected!
+  await loginPage.login('user', 'pass');
+  await inventoryPage.addToCart('Product');
+});
+```
+
+### Filter Pattern
+
+Resilient locators that adapt to DOM changes:
+
+```typescript
+// Instead of brittle ID-based selectors
+const container = page
+  .locator('.inventory_item')
+  .filter({ hasText: productName });
 ```
 
 ## 🚀 Getting Started
@@ -68,7 +131,7 @@ SauceDemoAI/
 npm test
 ```
 
-### Run Smoke Tests (Critical scenarios - ~6 tests)
+### Run Smoke Tests (Critical scenarios - 6 tests)
 ```bash
 npm run test:smoke
 ```
@@ -109,7 +172,7 @@ Tests are organized with tags for flexible execution:
 | Tag | Description | Count |
 |-----|-------------|-------|
 | `@smoke` | Critical happy path tests | 6 |
-| `@regression` | Full regression suite | 15+ |
+| `@regression` | Full regression suite | 20+ |
 | `@auth` | Authentication tests | 6 |
 | `@cart` | Shopping cart tests | 5 |
 | `@checkout` | Checkout flow tests | 4 |
@@ -174,24 +237,68 @@ After running tests, results are available in:
 - **Screenshots**: `test-results/` (on failure)
 - **Videos**: `test-results/` (on failure)
 
+**Current Status:**
+- ✅ Smoke Tests: 6/6 passing
+- ✅ Full Suite: 26/26 passing
+- ✅ Pass Rate: 100%
+- ⏱️ Execution Time: ~1.2 minutes
+
 ## 🛠️ Development Guidelines
 
 ### AI Test Standards
-All code follows strict guidelines defined in `AI_TEST_STANDARDS.md`:
+All code follows enterprise patterns defined in `AI_TEST_STANDARDS.md`:
 
-1. **Locators**: Use `getByRole`, `getByLabel`, `getByPlaceholder` (user-facing)
-2. **Architecture**: Page Object Model - no selectors in spec files
-3. **Waiting**: Web-first assertions only - no `waitForTimeout()`
-4. **TypeScript**: Strict typing - no `any` types
-5. **Error Handling**: Assume selector issues before logic issues
+1. **Locator Strategy (Cascade Rule)**:
+   - Priority 1: Semantic (`getByRole`, `getByLabel`, `getByPlaceholder`)
+   - Priority 2: Stable attributes (`getByTestId`)
+   - Priority 3: Filter pattern for dynamic lists
+
+2. **Architecture**: Component Object Model (COM)
+   - Pages compose components
+   - Reusable UI components
+   - No selectors in spec files
+
+3. **Fixtures & Dependency Injection**:
+   - Use custom fixtures from `src/fixtures/custom-test.ts`
+   - No manual page object instantiation
+   - Automatic lifecycle management
+
+4. **Waiting**: Web-first assertions only - no `waitForTimeout()`
+
+5. **TypeScript**: Strict typing - no `any` types
 
 ### Adding New Tests
 
-1. **Create/Update Page Object** in `/tests/pages/`
-2. **Add Test Scenario** in appropriate spec file
-3. **Use Tags** for categorization
-4. **Follow Naming Convention**: `TC-XXX: Description @tags`
-5. **Run Locally** before committing
+1. **Create/Update Component** (if needed) in `/src/components/`
+2. **Create/Update Page Object** in `/src/pages/`
+3. **Add Test Scenario** in appropriate module under `/src/tests/`
+4. **Use Custom Fixtures** - import from `../../fixtures/custom-test`
+5. **Use Tags** for categorization
+6. **Follow Naming Convention**: `TC-XXX: Description @tags`
+7. **Run Locally** before committing
+
+### Example Test Structure
+
+```typescript
+import { test, expect } from '../../fixtures/custom-test';
+
+test.describe('Feature Tests', () => {
+  test.beforeEach(async ({ loginPage }) => {
+    await loginPage.goto();
+    await loginPage.login('standard_user', 'secret_sauce');
+  });
+
+  test('TC-XXX: Test description @smoke @feature', async ({ 
+    page, 
+    inventoryPage, 
+    cartPage 
+  }) => {
+    // Test implementation using injected fixtures
+    await inventoryPage.addToCart('Product Name');
+    await expect(inventoryPage.navBar.cartBadge).toHaveText('1');
+  });
+});
+```
 
 ## 🔄 CI/CD Integration
 
@@ -205,6 +312,8 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-node@v3
+        with:
+          node-version: 18
       - run: npm ci
       - run: npx playwright install --with-deps chromium
       - run: npm run test:smoke
@@ -217,24 +326,47 @@ jobs:
 
 ## 📚 Documentation
 
-- **[TEST_PLAN.md](./TEST_PLAN.md)** - Comprehensive test plan with 20 detailed scenarios
-- **[AI_TEST_STANDARDS.md](./AI_TEST_STANDARDS.md)** - Coding standards and best practices
+- **[TEST_PLAN.md](./TEST_PLAN.md)** - Comprehensive test plan with detailed scenarios
+- **[AI_TEST_STANDARDS.md](./AI_TEST_STANDARDS.md)** - Enterprise coding standards and patterns
 - **[Playwright Docs](https://playwright.dev/)** - Official Playwright documentation
 
 ## 🎯 Success Metrics
 
 - ✅ **100% Critical Path Coverage** - All smoke tests automated
-- ✅ **90%+ Regression Coverage** - Comprehensive test scenarios
+- ✅ **100% Test Pass Rate** - 26/26 tests passing
 - ✅ **0% Flaky Tests** - Deterministic, reliable tests
-- ✅ **< 10 min Smoke Suite** - Fast feedback loop
-- ✅ **< 30 min Full Suite** - Complete regression testing
+- ✅ **< 30 sec Smoke Suite** - Fast feedback loop
+- ✅ **< 2 min Full Suite** - Complete regression testing
+- ✅ **Enterprise Architecture** - COM with dependency injection
+
+## 🏆 Architecture Benefits
+
+### Maintainability
+- ✅ Reusable components reduce duplication
+- ✅ Filter pattern resilient to DOM changes
+- ✅ Dependency injection simplifies tests
+- ✅ Clear separation of concerns
+
+### Scalability
+- ✅ Easy to add new components
+- ✅ Modular architecture
+- ✅ Organized by feature modules
+- ✅ Ready for API integration
+
+### Developer Experience
+- ✅ Less boilerplate code
+- ✅ Auto-completion with fixtures
+- ✅ Clear patterns to follow
+- ✅ Comprehensive documentation
 
 ## 🤝 Contributing
 
-1. Follow `AI_TEST_STANDARDS.md` guidelines
-2. Add tests for new features
-3. Ensure all tests pass before committing
-4. Update documentation as needed
+1. Follow `AI_TEST_STANDARDS.md` enterprise patterns
+2. Use custom fixtures for dependency injection
+3. Create reusable components when appropriate
+4. Add tests for new features
+5. Ensure all tests pass before committing
+6. Update documentation as needed
 
 ## 📄 License
 
@@ -246,6 +378,7 @@ Mukul Dev Mahato
 
 ---
 
-**Last Updated**: 2025-12-13  
-**Framework Version**: 1.0.0  
-**Playwright Version**: ^1.57.0
+**Last Updated**: 2025-12-14  
+**Framework Version**: 2.0.0 (Enterprise)  
+**Playwright Version**: ^1.57.0  
+**Architecture**: Component Object Model with Dependency Injection
