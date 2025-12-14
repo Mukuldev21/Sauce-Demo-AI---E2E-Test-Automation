@@ -20,7 +20,7 @@ For enterprise applications with complex DOMs, strict "User-Facing" rules are to
     * **NEVER** grab a specific index like `.nth(3)`.
     * **ALWAYS** narrow down scope by parent, then filter by text/content.
     * *Pattern:* `parentLocator.filter({ has: childLocator }).getByRole(...)`
-    * *Example:* `rows.filter({ hasText: 'Order #123' }).getByRole('button', { name: 'Edit' })`
+    * *Example:* `rows.filter({ hasText: 'Item #123' }).getByRole('button', { name: 'Edit' })`
 
 **🚫 FORBIDDEN:**
 * XPath (`//div[@id='root']/div[2]...`)
@@ -39,13 +39,15 @@ Do not put everything into giant Page Classes. This is an enterprise app; we use
 
 **Example Structure:**
 ```typescript
-class OrdersPage {
-    readonly navBar: NavigationBar; // Shared Component
-    readonly dataGrid: DataGrid;    // Shared Component
+class DashboardPage {
+    readonly navBar: NavigationBar;    // Shared Component
+    readonly dataTable: DataTable;     // Shared Component
+    readonly searchBox: SearchBox;     // Shared Component
     
     constructor(page: Page) {
         this.navBar = new NavigationBar(page);
-        this.dataGrid = new DataGrid(page);
+        this.dataTable = new DataTable(page);
+        this.searchBox = new SearchBox(page);
     }
 }
 ```
@@ -93,7 +95,7 @@ test('login', async ({ loginPage }) => {
     3. **Assert:** Verify UI elements.
 
 **Example Instruction for Agent:**  
-"If the test is 'Edit Customer', generate an API call step to create the customer first, then navigate directly to `/customer/{id}`."
+"If the test is 'Edit User', generate an API call step to create the user first, then navigate directly to `/users/{id}`."
 
 ---
 
@@ -130,17 +132,16 @@ npm install dotenv --save-dev
 **Example `.env` file:**
 ```env
 # Application URLs
-BASE_URL=https://www.saucedemo.com
-API_BASE_URL=https://api.saucedemo.com
+BASE_URL=https://your-app.com
+API_BASE_URL=https://api.your-app.com
 
-# Test Credentials
-STANDARD_USER=standard_user
-LOCKED_USER=locked_out_user
-PROBLEM_USER=problem_user
-PERFORMANCE_USER=performance_glitch_user
-TEST_PASSWORD=secret_sauce
+# Authentication
+USERNAME=your_username
+PASSWORD=your_password
+API_KEY=your_api_key_here
 
 # Environment
+NODE_ENV=development
 TEST_ENV=staging
 ```
 
@@ -150,12 +151,13 @@ TEST_ENV=staging
 BASE_URL=
 API_BASE_URL=
 
-# Test Credentials
-STANDARD_USER=
-LOCKED_USER=
-TEST_PASSWORD=
+# Authentication
+USERNAME=
+PASSWORD=
+API_KEY=
 
 # Environment
+NODE_ENV=
 TEST_ENV=
 ```
 
@@ -177,10 +179,10 @@ export default defineConfig({
 **Usage in Page Objects:**
 ```typescript
 class LoginPage {
-  async loginAsStandardUser() {
+  async loginWithEnvCredentials() {
     await this.login(
-      process.env.STANDARD_USER!,
-      process.env.TEST_PASSWORD!
+      process.env.USERNAME!,
+      process.env.PASSWORD!
     );
   }
 }
@@ -190,8 +192,8 @@ class LoginPage {
 ```typescript
 test('login with env credentials', async ({ loginPage }) => {
   await loginPage.login(
-    process.env.STANDARD_USER!,
-    process.env.TEST_PASSWORD!
+    process.env.USERNAME!,
+    process.env.PASSWORD!
   );
 });
 ```
@@ -204,9 +206,18 @@ test('login with env credentials', async ({ loginPage }) => {
 5. ✅ Use different `.env` files for different environments (`.env.staging`, `.env.prod`)
 
 **CI/CD Integration:**
-- Set environment variables in GitHub Actions secrets
-- Use repository secrets for sensitive data
+- Set environment variables in CI/CD platform secrets (GitHub Actions, GitLab CI, Jenkins)
+- Use repository/project secrets for sensitive data
 - Never log credentials in test output
+- Create `.env` file from secrets in CI/CD pipeline:
+  ```yaml
+  # GitHub Actions example
+  - name: Create .env file from secrets
+    run: |
+      echo "BASE_URL=${{ secrets.BASE_URL }}" >> .env
+      echo "USERNAME=${{ secrets.USERNAME }}" >> .env
+      echo "PASSWORD=${{ secrets.PASSWORD }}" >> .env
+  ```
 
 ---
 
@@ -219,9 +230,9 @@ test('login with env credentials', async ({ loginPage }) => {
 
 ## 8. MANDATORY FOLDER STRUCTURE
 
-* **`src/tests/`**: Spec files only. Grouped by Module (e.g., `src/tests/payments/`).
+* **`src/tests/`**: Spec files only. Grouped by Module (e.g., `src/tests/users/`, `src/tests/orders/`).
 * **`src/pages/`**: Page Objects (Full pages).
-* **`src/components/`**: Shared UI components (Modals, Grids, Navs).
+* **`src/components/`**: Shared UI components (Modals, Grids, Navs, Forms).
 * **`src/fixtures/`**: Custom Playwright fixtures (See `custom-test.ts`).
 * **`src/api/`**: API Request wrappers.
 
