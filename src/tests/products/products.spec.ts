@@ -11,7 +11,7 @@ test.describe('Product Tests', () => {
     test.beforeEach(async ({ loginPage, page }) => {
         // Login before each test
         await loginPage.goto();
-        await loginPage.login('standard_user', 'secret_sauce');
+        await loginPage.login(process.env.STANDARD_USER!, process.env.TEST_PASSWORD!);
         await expect(page).toHaveURL(/.*inventory.html/);
     });
 

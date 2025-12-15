@@ -15,7 +15,7 @@ test.describe('Authentication Tests', () => {
 
     test('TC-001: Successful login with standard user @smoke @auth', async ({ page, loginPage, inventoryPage }) => {
         // Perform login
-        await loginPage.login('standard_user', 'secret_sauce');
+        await loginPage.login(process.env.STANDARD_USER!, process.env.TEST_PASSWORD!);
 
         // Verify redirect to inventory page
         await expect(page).toHaveURL(/.*inventory.html/);
@@ -27,7 +27,7 @@ test.describe('Authentication Tests', () => {
 
     test('TC-002: Login failure - locked out user @smoke @negative @auth', async ({ page, loginPage }) => {
         // Attempt login with locked out user
-        await loginPage.login('locked_out_user', 'secret_sauce');
+        await loginPage.login(process.env.LOCKED_USER!, process.env.TEST_PASSWORD!);
 
         // Verify error message is displayed
         await expect(loginPage.errorMessage).toBeVisible();
@@ -52,7 +52,7 @@ test.describe('Authentication Tests', () => {
 
     test('TC-004: Successful logout @smoke @auth', async ({ page, loginPage, inventoryPage }) => {
         // Login first
-        await loginPage.login('standard_user', 'secret_sauce');
+        await loginPage.login(process.env.STANDARD_USER!, process.env.TEST_PASSWORD!);
         await expect(page).toHaveURL(/.*inventory.html/);
 
         // Perform logout using NavigationBar component

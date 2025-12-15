@@ -14,7 +14,7 @@ test.describe('Edge Cases Tests', () => {
 
     test('TC-014: Reset app state @regression @edge', async ({ page, loginPage, inventoryPage, cartPage }) => {
         // Login and add items to cart
-        await loginPage.login('standard_user', 'secret_sauce');
+        await loginPage.login(process.env.STANDARD_USER!, process.env.TEST_PASSWORD!);
         await expect(page).toHaveURL(/.*inventory.html/);
 
         // Add multiple items
@@ -41,7 +41,7 @@ test.describe('Edge Cases Tests', () => {
 
     test('TC-015: Problem user - visual issues @regression @edge @problem-user', async ({ page, loginPage, inventoryPage, cartPage }) => {
         // Login as problem user
-        await loginPage.login('problem_user', 'secret_sauce');
+        await loginPage.login(process.env.PROBLEM_USER!, process.env.TEST_PASSWORD!);
         await expect(page).toHaveURL(/.*inventory.html/);
 
         // Verify inventory page loads despite potential visual issues
@@ -68,7 +68,7 @@ test.describe('Edge Cases Tests', () => {
 
     test('TC-016: Performance glitch user @regression @performance', async ({ page, loginPage, inventoryPage, cartPage }) => {
         // Login as performance glitch user (may be slow)
-        await loginPage.login('performance_glitch_user', 'secret_sauce');
+        await loginPage.login(process.env.PERFORMANCE_USER!, process.env.TEST_PASSWORD!);
 
         // Use increased timeout for inventory page load
         await expect(inventoryPage.productsGrid).toBeVisible({ timeout: 60000 });
@@ -91,7 +91,7 @@ test.describe('Edge Cases Tests', () => {
 
     test('Error user - checkout failure @regression @edge', async ({ page, loginPage, inventoryPage, cartPage }) => {
         // Login as error user
-        await loginPage.login('error_user', 'secret_sauce');
+        await loginPage.login(process.env.ERROR_USER!, process.env.TEST_PASSWORD!);
         await expect(page).toHaveURL(/.*inventory.html/);
 
         // Add item to cart
@@ -108,7 +108,7 @@ test.describe('Edge Cases Tests', () => {
 
     test('Visual user - image differences @regression @edge', async ({ page, loginPage, inventoryPage }) => {
         // Login as visual user
-        await loginPage.login('visual_user', 'secret_sauce');
+        await loginPage.login(process.env.VISUAL_USER!, process.env.TEST_PASSWORD!);
         await expect(page).toHaveURL(/.*inventory.html/);
 
         // Verify page loads
