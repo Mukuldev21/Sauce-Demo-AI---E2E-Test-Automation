@@ -84,6 +84,7 @@ jobs:
       run: |
         echo "BASE_URL=${{ secrets.BASE_URL }}" >> .env
         echo "STANDARD_USER=${{ secrets.STANDARD_USER }}" >> .env
+        echo "LOCKED_USER=${{ secrets.LOCKED_USER }}" >> .env
         echo "TEST_PASSWORD=${{ secrets.TEST_PASSWORD }}" >> .env
         echo "TEST_ENV=ci" >> .env
 
