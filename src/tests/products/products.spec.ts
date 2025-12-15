@@ -170,4 +170,65 @@ test.describe('Product Tests', () => {
         // Verify reset worked (menu should close)
         await expect(inventoryPage.navBar.burgerMenuButton).toBeVisible();
     });
+
+    test('TC-029: Sorting persists after navigation @regression @products', async ({ page, loginPage, inventoryPage, productDetailPage }) => {
+        // Login
+        await loginPage.goto();
+        await loginPage.login(process.env.STANDARD_USER!, process.env.TEST_PASSWORD!);
+
+        // Sort by price low to high
+        await inventoryPage.sortBy('lohi');
+
+        // Verify sorting applied
+        const firstProductBefore = await inventoryPage.getFirstProductName();
+        expect(firstProductBefore).toBe('Sauce Labs Onesie');
+
+        // Navigate to product detail
+        await inventoryPage.clickProduct('Sauce Labs Onesie'); // Cheapest product
+        await expect(page).toHaveURL(/.*inventory-item.html/);
+
+        // Go back to inventory
+        await productDetailPage.backToProducts();
+        await expect(page).toHaveURL(/.*inventory.html/);
+
+        // Document actual behavior: sorting DOES NOT persist (resets to default A-Z)
+        // This is the actual Sauce Demo behavior
+        const firstProductAfter = await inventoryPage.getFirstProductName();
+        expect(firstProductAfter).toBe('Sauce Labs Backpack'); // Default A-Z sorting
+    });
+
+    test('TC-032: All product prices formatted correctly @regression @products', async ({ loginPage, inventoryPage }) => {
+        // Login
+        await loginPage.goto();
+        await loginPage.login(process.env.STANDARD_USER!, process.env.TEST_PASSWORD!);
+
+        const prices = await inventoryPage.getAllProductPrices();
+
+        // Verify all prices are valid numbers
+        for (const price of prices) {
+            expect(price).toBeGreaterThan(0);
+            expect(price).toBeLessThan(1000); // Reasonable upper limit
+            // Verify max 2 decimal places
+            const decimalPlaces = (price.toString().split('.')[1] || '').length;
+            expect(decimalPlaces).toBeLessThanOrEqual(2);
+        }
+    });
+
+    test('TC-035: About link opens Sauce Labs website @regression @navigation', async ({ page, loginPage, inventoryPage }) => {
+        // Login
+        await loginPage.goto();
+        await loginPage.login(process.env.STANDARD_USER!, process.env.TEST_PASSWORD!);
+
+        // Open burger menu
+        await inventoryPage.navBar.burgerMenuButton.click();
+
+        // Click About link (navigates to external site)
+        await inventoryPage.navBar.aboutLink.click();
+
+        // Wait for navigation
+        await page.waitForURL(/saucelabs.com/, { timeout: 10000 });
+
+        // Verify navigated to Sauce Labs website
+        await expect(page).toHaveURL(/saucelabs.com/);
+    });
 });

@@ -167,4 +167,28 @@ test.describe('Shopping Cart Tests', () => {
         expect(await cartPage.getCartItemCount()).toBe(0);
         await expect(inventoryPage.navBar.cartBadge).not.toBeVisible();
     });
+
+    test('TC-030: Add and remove same item multiple times @regression @cart', async ({ loginPage, inventoryPage }) => {
+        // Login
+        await loginPage.goto();
+        await loginPage.login(process.env.STANDARD_USER!, process.env.TEST_PASSWORD!);
+
+        const productName = 'Sauce Labs Backpack';
+
+        // Add item
+        await inventoryPage.addToCart(productName);
+        await expect(inventoryPage.navBar.cartBadge).toHaveText('1');
+
+        // Remove item
+        await inventoryPage.removeFromCart(productName);
+        await expect(inventoryPage.navBar.cartBadge).not.toBeVisible();
+
+        // Add again
+        await inventoryPage.addToCart(productName);
+        await expect(inventoryPage.navBar.cartBadge).toHaveText('1');
+
+        // Remove again
+        await inventoryPage.removeFromCart(productName);
+        await expect(inventoryPage.navBar.cartBadge).not.toBeVisible();
+    });
 });

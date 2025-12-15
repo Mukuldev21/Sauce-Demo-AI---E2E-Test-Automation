@@ -260,4 +260,91 @@ test.describe('Checkout Tests', () => {
         await checkoutOverviewPage.finish();
         await expect(page).toHaveURL(/.*checkout-complete.html/);
     });
+
+    test('TC-031: Very long input values in checkout @regression @edge @checkout', async ({
+        page,
+        loginPage,
+        inventoryPage,
+        cartPage,
+        checkoutInfoPage
+    }) => {
+        // Login and navigate to checkout
+        await loginPage.goto();
+        await loginPage.login(process.env.STANDARD_USER!, process.env.TEST_PASSWORD!);
+        await inventoryPage.addToCart('Sauce Labs Backpack');
+        await inventoryPage.goToCart();
+        await cartPage.proceedToCheckout();
+
+        // Enter very long values
+        const longName = 'A'.repeat(100);
+        const longPostal = '1'.repeat(50);
+
+        await checkoutInfoPage.fillInfo(longName, longName, longPostal);
+        await checkoutInfoPage.continue();
+
+        // Verify either accepts or shows validation error
+        const url = page.url();
+        const hasError = await checkoutInfoPage.errorMessage.isVisible();
+
+        // Should either proceed or show error (both are acceptable)
+        expect(url.includes('checkout-step-two') || hasError).toBeTruthy();
+    });
+
+    test('TC-033: Browser refresh during checkout @edge @checkout', async ({
+        page,
+        loginPage,
+        inventoryPage,
+        cartPage,
+        checkoutInfoPage
+    }) => {
+        // Login and navigate to checkout
+        await loginPage.goto();
+        await loginPage.login(process.env.STANDARD_USER!, process.env.TEST_PASSWORD!);
+        await inventoryPage.addToCart('Sauce Labs Backpack');
+        await inventoryPage.goToCart();
+        await cartPage.proceedToCheckout();
+
+        // Fill form
+        await checkoutInfoPage.fillInfo('John', 'Doe', '12345');
+
+        // Refresh page
+        await page.reload();
+
+        // Verify still on checkout page
+        await expect(page).toHaveURL(/.*checkout-step-one.html/);
+
+        // Verify form data cleared (expected behavior)
+        const firstName = await checkoutInfoPage.getFirstNameValue();
+        expect(firstName).toBe('');
+    });
+
+    test('TC-034: Checkout with multiple items @regression @checkout', async ({
+        page,
+        loginPage,
+        inventoryPage,
+        cartPage,
+        checkoutInfoPage,
+        checkoutOverviewPage
+    }) => {
+        // Login
+        await loginPage.goto();
+        await loginPage.login(process.env.STANDARD_USER!, process.env.TEST_PASSWORD!);
+
+        // Add multiple items
+        await inventoryPage.addToCart('Sauce Labs Backpack');
+        await inventoryPage.addToCart('Sauce Labs Bolt T-Shirt');
+
+        await inventoryPage.goToCart();
+        await cartPage.proceedToCheckout();
+        await checkoutInfoPage.fillInfo('John', 'Doe', '12345');
+        await checkoutInfoPage.continue();
+
+        // Verify both items in overview
+        const items = await page.locator('.cart_item').count();
+        expect(items).toBe(2);
+
+        // Verify total calculation
+        const itemTotal = await checkoutOverviewPage.getItemTotal();
+        expect(itemTotal).toBeGreaterThan(0);
+    });
 });

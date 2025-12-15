@@ -113,6 +113,16 @@ export class InventoryPage {
     }
 
     /**
+     * Get the first product name from the inventory
+     * Useful for verifying sorting persistence
+     * @returns Name of the first product in the list
+     */
+    async getFirstProductName(): Promise<string> {
+        const firstProduct = this.page.locator('.inventory_item_name').first();
+        return await firstProduct.innerText();
+    }
+
+    /**
      * Click on a product to view its details
      * Delegates to ProductCard component
      * 
