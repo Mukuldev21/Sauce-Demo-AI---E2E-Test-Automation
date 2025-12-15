@@ -84,7 +84,7 @@ test.describe('Authentication Tests', () => {
         await expect(page).toHaveURL('https://www.saucedemo.com/');
     });
 
-    test('Login with empty credentials @regression @negative @auth', async ({ page, loginPage }) => {
+    test('TC-021: Login with empty credentials @smoke @negative @auth', async ({ page, loginPage }) => {
         // Attempt login with empty fields
         await loginPage.login('', '');
 

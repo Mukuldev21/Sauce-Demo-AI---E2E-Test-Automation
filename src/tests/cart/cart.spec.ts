@@ -122,4 +122,49 @@ test.describe('Shopping Cart Tests', () => {
         // Note: The app allows proceeding with empty cart, which may be a bug
         // but we document the actual behavior
     });
+
+    test('TC-022: Add all products to cart @regression @cart', async ({ page, inventoryPage, cartPage }) => {
+        // Get all product names
+        const productNames = await inventoryPage.getAllProductNames();
+        const productCount = productNames.length;
+
+        // Add each product to cart
+        for (const name of productNames) {
+            await inventoryPage.addToCart(name);
+        }
+
+        // Verify cart badge shows correct count
+        await expect(inventoryPage.navBar.cartBadge).toHaveText(productCount.toString());
+
+        // Navigate to cart and verify all items
+        await inventoryPage.goToCart();
+        const cartItemCount = await cartPage.getCartItemCount();
+        expect(cartItemCount).toBe(productCount);
+
+        // Verify each product is in cart
+        for (const name of productNames) {
+            await expect(cartPage.isItemInCart(name)).resolves.toBe(true);
+        }
+    });
+
+    test('TC-028: Remove all items from cart @regression @cart', async ({ page, inventoryPage, cartPage }) => {
+        // Add 3 items
+        await inventoryPage.addToCart('Sauce Labs Backpack');
+        await inventoryPage.addToCart('Sauce Labs Bike Light');
+        await inventoryPage.addToCart('Sauce Labs Bolt T-Shirt');
+        await expect(inventoryPage.navBar.cartBadge).toHaveText('3');
+
+        // Navigate to cart
+        await inventoryPage.goToCart();
+        expect(await cartPage.getCartItemCount()).toBe(3);
+
+        // Remove all items
+        await cartPage.removeItem('Sauce Labs Backpack');
+        await cartPage.removeItem('Sauce Labs Bike Light');
+        await cartPage.removeItem('Sauce Labs Bolt T-Shirt');
+
+        // Verify cart is empty
+        expect(await cartPage.getCartItemCount()).toBe(0);
+        await expect(inventoryPage.navBar.cartBadge).not.toBeVisible();
+    });
 });

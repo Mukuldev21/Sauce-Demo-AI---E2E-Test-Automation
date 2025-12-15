@@ -187,4 +187,77 @@ test.describe('Checkout Tests', () => {
         await checkoutInfoPage.continue();
         await expect(page).toHaveURL(/.*checkout-step-two.html/);
     });
+
+    test('TC-023: Cancel checkout from info page @regression @checkout', async ({
+        page,
+        inventoryPage,
+        cartPage,
+        checkoutInfoPage
+    }) => {
+        // Add item and navigate to checkout
+        await inventoryPage.addToCart('Sauce Labs Backpack');
+        await inventoryPage.goToCart();
+        await cartPage.proceedToCheckout();
+        await expect(page).toHaveURL(/.*checkout-step-one.html/);
+
+        // Cancel from checkout info page
+        await checkoutInfoPage.cancel();
+
+        // Verify returned to cart
+        await expect(page).toHaveURL(/.*cart.html/);
+        expect(await cartPage.getCartItemCount()).toBe(1);
+        await expect(cartPage.isItemInCart('Sauce Labs Backpack')).resolves.toBe(true);
+    });
+
+    test('TC-024: Cancel checkout from overview page @regression @checkout', async ({
+        page,
+        inventoryPage,
+        cartPage,
+        checkoutInfoPage,
+        checkoutOverviewPage
+    }) => {
+        // Add item and navigate through checkout
+        await inventoryPage.addToCart('Sauce Labs Backpack');
+        await inventoryPage.goToCart();
+        await cartPage.proceedToCheckout();
+        await checkoutInfoPage.fillInfo('John', 'Doe', '12345');
+        await checkoutInfoPage.continue();
+        await expect(page).toHaveURL(/.*checkout-step-two.html/);
+
+        // Cancel from overview page
+        await checkoutOverviewPage.cancel();
+
+        // Verify returned to inventory
+        await expect(page).toHaveURL(/.*inventory.html/);
+        await expect(inventoryPage.navBar.cartBadge).toHaveText('1');
+    });
+
+    test('TC-027: Special characters in checkout form @regression @checkout', async ({
+        page,
+        inventoryPage,
+        cartPage,
+        checkoutInfoPage,
+        checkoutOverviewPage
+    }) => {
+        // Add item and navigate to checkout
+        await inventoryPage.addToCart('Sauce Labs Backpack');
+        await inventoryPage.goToCart();
+        await cartPage.proceedToCheckout();
+
+        // Enter special characters in form fields
+        await checkoutInfoPage.fillInfo(
+            "John-O'Brien",  // Hyphen and apostrophe
+            "Van Der Berg",  // Spaces
+            "12345-6789"     // Hyphen in postal code
+        );
+        await checkoutInfoPage.continue();
+
+        // Verify checkout continues successfully
+        await expect(page).toHaveURL(/.*checkout-step-two.html/);
+        await expect(checkoutOverviewPage.finishButton).toBeVisible();
+
+        // Verify can complete purchase with special characters
+        await checkoutOverviewPage.finish();
+        await expect(page).toHaveURL(/.*checkout-complete.html/);
+    });
 });

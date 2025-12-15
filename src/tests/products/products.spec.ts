@@ -129,4 +129,45 @@ test.describe('Product Tests', () => {
         // Verify add to cart button reappears
         await expect(productDetailPage.isAddToCartVisible()).resolves.toBe(true);
     });
+
+    test('TC-025: All product images load correctly @regression @products', async ({ page, inventoryPage }) => {
+        // Get all product image elements
+        const images = await page.locator('.inventory_item_img img').all();
+
+        // Verify we have images
+        expect(images.length).toBeGreaterThan(0);
+
+        // Verify each image is visible and has valid src
+        for (const img of images) {
+            await expect(img).toBeVisible();
+            const src = await img.getAttribute('src');
+            expect(src).toBeTruthy();
+            expect(src).not.toContain('WithGarbageOnItToBreakTheUrl'); // Not problem_user
+        }
+    });
+
+    test('TC-026: Burger menu all links functional @regression @navigation', async ({ page, inventoryPage }) => {
+        // Open burger menu
+        await inventoryPage.navBar.burgerMenuButton.click();
+
+        // Verify all menu items visible
+        await expect(inventoryPage.navBar.allItemsLink).toBeVisible();
+        await expect(inventoryPage.navBar.aboutLink).toBeVisible();
+        await expect(inventoryPage.navBar.logoutLink).toBeVisible();
+        await expect(inventoryPage.navBar.resetAppStateLink).toBeVisible();
+
+        // Test All Items link
+        await inventoryPage.navBar.allItemsLink.click();
+        await expect(page).toHaveURL(/.*inventory.html/);
+
+        // Close the menu (it stays open after All Items click)
+        await inventoryPage.navBar.closeMenuButton.click();
+
+        // Open menu again and test Reset App State
+        await inventoryPage.navBar.burgerMenuButton.click();
+        await inventoryPage.navBar.resetAppStateLink.click();
+
+        // Verify reset worked (menu should close)
+        await expect(inventoryPage.navBar.burgerMenuButton).toBeVisible();
+    });
 });
