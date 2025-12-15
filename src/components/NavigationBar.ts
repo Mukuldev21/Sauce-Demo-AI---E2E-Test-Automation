@@ -12,6 +12,8 @@ export class NavigationBar {
     readonly cartBadge: Locator;
     readonly logoutLink: Locator;
     readonly resetAppStateLink: Locator;
+    readonly allItemsLink: Locator;
+    readonly aboutLink: Locator;
     readonly closeMenuButton: Locator;
 
     constructor(page: Page) {
@@ -25,6 +27,8 @@ export class NavigationBar {
         // Menu items (visible after opening burger menu)
         this.logoutLink = page.locator('#logout_sidebar_link');
         this.resetAppStateLink = page.locator('#reset_sidebar_link');
+        this.allItemsLink = page.locator('#inventory_sidebar_link');
+        this.aboutLink = page.locator('#about_sidebar_link');
         this.closeMenuButton = page.locator('#react-burger-cross-btn');
     }
 
