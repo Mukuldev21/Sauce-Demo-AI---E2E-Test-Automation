@@ -194,28 +194,42 @@ npx playwright test --grep @negative
 
 ### Critical User Journeys
 
-1. **Complete Purchase Flow** (TC-008, TC-020)
-   - Add items to cart
+1. **Complete Purchase Flow** (TC-008, TC-020, TC-034)
+   - Add items to cart (single and multiple)
    - Complete checkout
    - Verify order confirmation
+   - Price calculations
 
-2. **Authentication & Authorization** (TC-001 to TC-004, TC-018)
+2. **Authentication & Authorization** (TC-001 to TC-004, TC-018, TC-021)
    - Successful login
-   - Failed login scenarios
+   - Failed login scenarios (invalid credentials, empty fields)
    - Logout
    - Unauthenticated access
 
-3. **Shopping Cart Management** (TC-005 to TC-007, TC-013, TC-017)
-   - Add/remove items
+3. **Shopping Cart Management** (TC-005 to TC-007, TC-013, TC-017, TC-022, TC-028, TC-030)
+   - Add/remove items (single and all products)
    - Cart persistence
    - Empty cart handling
+   - Add/remove same item multiple times
 
-4. **Product Browsing** (TC-010 to TC-012)
+4. **Product Browsing** (TC-010 to TC-012, TC-025, TC-029, TC-032)
    - Product sorting (name, price)
+   - Sorting behavior after navigation
    - Product detail view
-   - Add to cart from different pages
+   - Product images validation
+   - Price format validation
 
-5. **Error Handling** (TC-014 to TC-016, TC-019)
+5. **Checkout Flow** (TC-023, TC-024, TC-027, TC-031, TC-033)
+   - Cancel checkout (info and overview pages)
+   - Special characters in forms
+   - Very long input values
+   - Browser refresh handling
+
+6. **Navigation** (TC-026, TC-035)
+   - Burger menu functionality
+   - External link navigation
+
+7. **Error Handling & Edge Cases** (TC-014 to TC-016, TC-019)
    - Form validation
    - Special user personas
    - App state reset
@@ -240,10 +254,10 @@ After running tests, results are available in:
 - **Videos**: `test-results/` (on failure)
 
 **Current Status:**
-- ✅ Smoke Tests: 6/6 passing
-- ✅ Full Suite: 26/26 passing
+- ✅ Smoke Tests: 7/7 passing
+- ✅ Full Suite: 41/41 passing
 - ✅ Pass Rate: 100%
-- ⏱️ Execution Time: ~1.2 minutes
+- ⏱️ Execution Time: ~1.5 minutes
 
 ## 🛠️ Development Guidelines
 
