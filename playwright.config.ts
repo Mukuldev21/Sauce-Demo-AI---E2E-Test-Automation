@@ -4,36 +4,13 @@ import dotenv from 'dotenv';
 // Load environment variables from .env file
 dotenv.config();
 
-// Build reporters array conditionally
+// Build reporters array
 const reporters: any[] = [
   ['html'],
   ['list'],
   ['json', { outputFile: 'test-results/results.json' }],
 ];
 
-// Only add ReportPortal reporter if API key is configured
-if (process.env.RP_API_KEY) {
-  reporters.push([
-    '@reportportal/agent-js-playwright',
-    {
-      apiKey: process.env.RP_API_KEY,
-      endpoint: process.env.RP_ENDPOINT,
-      project: process.env.RP_PROJECT,
-      launch: process.env.RP_LAUNCH || 'Sauce_Demo_Tests',
-      description: 'Sauce Demo E2E Automation Tests',
-      attributes: [
-        {
-          key: 'framework',
-          value: 'playwright',
-        },
-        {
-          key: 'environment',
-          value: process.env.TEST_ENV || 'local',
-        },
-      ],
-    },
-  ]);
-}
 
 export default defineConfig({
   testDir: './src/tests',  // Updated to use new enterprise structure
