@@ -7,7 +7,7 @@ Enterprise-level end-to-end test automation framework for [Sauce Demo](https://w
 This project implements a robust test automation framework following **enterprise patterns** with Component Object Model (COM), custom fixtures, and dependency injection as defined in `AI_TEST_STANDARDS.md`.
 
 ### Key Features
-- ✅ **34 Test Scenarios** covering critical user journeys
+- ✅ **41 Test Scenarios** covering critical user journeys
 - ✅ **7 Page Objects** with Component Object Model architecture
 - ✅ **3 Reusable Components** (NavigationBar, ProductCard, CartItem)
 - ✅ **Custom Fixtures** with dependency injection
@@ -26,11 +26,11 @@ SauceDemoAI/
 │   │   ├── auth/
 │   │   │   └── auth.spec.ts        # Authentication tests (7 scenarios)
 │   │   ├── cart/
-│   │   │   └── cart.spec.ts        # Shopping cart tests (7 scenarios)
+│   │   │   └── cart.spec.ts        # Shopping cart tests (8 scenarios)
 │   │   ├── checkout/
-│   │   │   └── checkout.spec.ts    # Checkout flow tests (7 scenarios)
+│   │   │   └── checkout.spec.ts    # Checkout flow tests (10 scenarios)
 │   │   ├── products/
-│   │   │   └── products.spec.ts    # Product browsing tests (8 scenarios)
+│   │   │   └── products.spec.ts    # Product browsing tests (11 scenarios)
 │   │   └── edge-cases/
 │   │       └── edge-cases.spec.ts  # Edge cases & special users (5 scenarios)
 │   ├── pages/                      # Page Object Models
@@ -173,15 +173,15 @@ Tests are organized with tags for flexible execution:
 | Tag | Description | Count |
 |-----|-------------|-------|
 | `@smoke` | Critical happy path tests | 7 |
-| `@regression` | Full regression suite | 27+ |
+| `@regression` | Full regression suite | 34+ |
 | `@auth` | Authentication tests | 7 |
-| `@cart` | Shopping cart tests | 7 |
-| `@checkout` | Checkout flow tests | 7 |
-| `@products` | Product browsing tests | 8 |
-| `@navigation` | Navigation tests | 1 |
+| `@cart` | Shopping cart tests | 8 |
+| `@checkout` | Checkout flow tests | 10 |
+| `@products` | Product browsing tests | 11 |
+| `@navigation` | Navigation tests | 2 |
 | `@e2e` | End-to-end flows | 3 |
 | `@negative` | Negative test scenarios | 6+ |
-| `@edge` | Edge cases | 5 |
+| `@edge` | Edge cases | 7 |
 
 ### Run Tests by Tag
 ```bash
