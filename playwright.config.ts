@@ -14,7 +14,27 @@ export default defineConfig({
   reporter: [
     ['html'],
     ['list'],
-    ['json', { outputFile: 'test-results/results.json' }]
+    ['json', { outputFile: 'test-results/results.json' }],
+    [
+      '@reportportal/agent-js-playwright',
+      {
+        apiKey: process.env.RP_API_KEY,
+        endpoint: process.env.RP_ENDPOINT,
+        project: process.env.RP_PROJECT,
+        launch: process.env.RP_LAUNCH || 'Sauce_Demo_Tests',
+        description: 'Sauce Demo E2E Automation Tests',
+        attributes: [
+          {
+            key: 'framework',
+            value: 'playwright',
+          },
+          {
+            key: 'environment',
+            value: process.env.TEST_ENV || 'local',
+          },
+        ],
+      },
+    ],
   ],
 
   use: {
