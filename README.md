@@ -52,17 +52,15 @@ SauceDemoAI/
 ├── playwright.config.ts            # Playwright configuration
 ├── package.json                    # Dependencies & scripts
 ├── AI_TEST_STANDARDS.md            # Enterprise coding standards
-├── TESTPLAN.md                     # Test strategy and overview
-├── TESTCASES.md                    # Detailed test case steps (all 41 tests)
-└── TEST_PLAN.md                    # Legacy comprehensive test plan
+├── TESTPLAN.md                     # Test strategy & scope
+└── TESTCASES.md                    # Detailed test cases (tabular)
 ```
 
 ## 📚 Documentation
 
-- **[TESTPLAN.md](TESTPLAN.md)** - Test strategy, scope, and execution plan
-- **[TESTCASES.md](TESTCASES.md)** - Detailed test cases with steps (all 41 tests)
+- **[TESTPLAN.md](TESTPLAN.md)** - High-level test strategy, environment, and data
+- **[TESTCASES.md](TESTCASES.md)** - Detailed steps and expected results for all 41 test cases
 - **[AI_TEST_STANDARDS.md](AI_TEST_STANDARDS.md)** - Enterprise coding standards
-- **[TEST_PLAN.md](TEST_PLAN.md)** - Legacy comprehensive test documentation
 
 
 ## 🏗️ Architecture Highlights
